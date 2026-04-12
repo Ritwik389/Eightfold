@@ -1,0 +1,32 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-dotenv==1.0.0
+python-multipart==0.0.6
+websockets==12.0
+fpdf2==2.7.0
+
+# SENTINEL dependencies & Gemini LLM/TTS
+google-generativeai==0.5.1
+textstat==0.7.3
+sentence-transformers==2.2.2
+opencv-python-headless==4.8.1.78
+mediapipe==0.10.33
+ultralytics==8.0.202
+librosa==0.10.0
+soundfile==0.12.1
+noisereduce==3.0.0
+resemblyzer==0.1.1.dev0
+matplotlib==3.8.2
+Pillow==10.1.0
+
+# Deepgram STT
+deepgram-sdk==3.3.0
+
+# CORS
+fastapi-cors==0.0.6
+
+# JWT for auth (optional)
+PyJWT==2.8.0
+
+# Async database (if needed)
+sqlalchemy==2.0.23

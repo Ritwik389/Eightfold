@@ -1,0 +1,74 @@
+/* App.css - Main application styles */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.app-content {
+  width: 100%;
+  max-width: 1400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  .app-content {
+    min-height: auto;
+    max-width: 100%;
+  }
+}
+
+/* Loading and error states */
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.app-error {
+  padding: 2rem;
+  background: #fee;
+  border-left: 4px solid #f44;
+  border-radius: 4px;
+  color: #c00;
+  font-size: 14px;
+}

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API=${GROQ_API}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/google-credentials.json
+    volumes:
+      - ${GOOGLE_CREDENTIALS_PATH:-.}:/app/google-credentials.json:ro
+      - ./reports:/app/reports
+      - ./snapshots:/app/snapshots
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - redis
+
+  # Redis for caching and session management (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    command: npm run dev
+
+volumes:
+  redis_data:

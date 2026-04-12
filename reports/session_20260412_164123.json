@@ -1,0 +1,280 @@
+{
+  "candidate_name": "Marcus Chen",
+  "experience_tier": "Senior",
+  "start_time": "2026-04-12 16:41:23",
+  "end_time": "2026-04-12 16:41:24",
+  "duration": "0m 0s",
+  "session_integrity_score": 32.32,
+  "classification": "WATCH",
+  "turns": [
+    {
+      "turn_index": 1,
+      "question": "Walk me through how you'd decide between a layer-4 and layer-7 load balancer for a real-time chat product.",
+      "response": "Great question. When I was at my previous company, I owned the infrastructure layer for our messaging platform. We actually went through this exact decision. I ended up going with layer-7 because we needed to do sticky sessions based on the WebSocket upgrade headers, and I think L4 wouldn't give us that granularity. The trade-off was probably about a 3-5ms latency overhead per connection, which we measured pretty carefully. In hindsight, I might have considered using L4 for the initial TCP handshake and then handling the session affinity at the application layer, but I'm not sure if the complexity would have been worth it in our case.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "GREEN",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Insufficient history for drift analysis."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 8.2695,
+        "hedge_ratio": 0.028,
+        "temporal_anchor_found": true,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 0.0,
+      "classification": "CLEAN"
+    },
+    {
+      "turn_index": 2,
+      "question": "How would you handle database connection pooling in a high-traffic API?",
+      "response": "Yeah, so at my last role we had a service doing about 10k requests per second hitting PostgreSQL. I struggled with the connection pool sizing for a while — initially we were using the default pool size in SQLAlchemy which was way too small. I learned the hard way that you want to tune it based on your connection latency times the expected concurrency. We probably went with a pool size of around 20 per pod with a max overflow of 10. I also deployed PgBouncer as a connection multiplexer, which I think reduced our actual PostgreSQL connections by about 4x. The tricky part was debugging connection leaks — we fixed those by adding instrumentation around the session lifecycle.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "GREEN",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Insufficient history for drift analysis."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "RED",
+        "burstiness_score": 0.4104,
+        "hedge_ratio": 0.0168,
+        "temporal_anchor_found": true,
+        "note": "AI signals: hedge ratio 0.0168 (below threshold)."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 20.0,
+      "classification": "CLEAN"
+    },
+    {
+      "turn_index": 3,
+      "question": "Can you explain the CAP theorem and how it applies to distributed databases?",
+      "response": "Sure. So I've dealt with this practically when we were designing our distributed order processing system. We needed strong consistency for financial transactions but could tolerate some staleness for catalog data. I think the key insight I got from building that system was that CAP isn't really a binary choice — it's more of a spectrum per operation. We used Cassandra for the catalog service, which is AP by default but you can tune consistency levels per query. And for the transaction service, I chose CockroachDB because we needed serializable isolation. I remember struggling with the latency implications of that choice, but the correctness guarantees were probably worth the 20ms overhead we measured.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "RED",
+        "burstiness_score": 3.6182,
+        "hedge_ratio": 0.0177,
+        "temporal_anchor_found": false,
+        "note": "AI signals: hedge ratio 0.0177 (below threshold); no temporal anchors with compound AI signals."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 41.25,
+      "classification": "WATCH"
+    },
+    {
+      "turn_index": 4,
+      "question": "How would you design a rate limiting system for a public API?",
+      "response": "Rate limiting is a critical component of API infrastructure that serves to protect backend services from excessive load and ensure fair resource allocation across consumers. The implementation typically involves the following approaches:\n\n1. Token Bucket Algorithm: This algorithm maintains a bucket of tokens that refills at a constant rate. Each request consumes one token, and requests are rejected when the bucket is empty.\n2. Sliding Window Log: This approach maintains a log of request timestamps and counts requests within a configurable time window, providing more precise rate limiting.\n3. Fixed Window Counter: This is the simplest approach, using a counter that resets at fixed intervals, though it can allow bursts at window boundaries.\n4. Distributed Rate Limiting: For multi-instance deployments, centralized storage such as Redis is essential for maintaining consistent rate limit state across all service instances.\n\nThe choice of algorithm depends on the specific requirements of the system, including the desired precision, performance characteristics, and deployment architecture.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "RED",
+        "burstiness_score": 7.0105,
+        "hedge_ratio": 0.0,
+        "temporal_anchor_found": false,
+        "note": "AI signals: hedge ratio 0.0000 (below threshold); no temporal anchors with compound AI signals; 4 structured list items (unusual for spoken responses)."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 41.25,
+      "classification": "WATCH"
+    },
+    {
+      "turn_index": 5,
+      "question": "How would you design a microservices architecture for an e-commerce platform?",
+      "response": "A microservices architecture for an e-commerce platform requires careful decomposition of the domain into bounded contexts. The recommended approach involves the following service boundaries:\n\n1. Product Catalog Service: Responsible for managing product information, categories, and search functionality. Backed by Elasticsearch for full-text search capabilities.\n2. Order Management Service: Handles order lifecycle from creation through fulfillment, implementing the Saga pattern for distributed transaction management.\n3. Payment Processing Service: Manages payment authorization, capture, and refund operations with PCI DSS compliance.\n4. Inventory Service: Maintains real-time inventory state using event sourcing to ensure accurate stock levels.\n5. User Authentication Service: Implements OAuth 2.0 and JWT-based authentication with role-based access control.\n\nInter-service communication should utilize asynchronous messaging via Apache Kafka for event-driven interactions and gRPC for synchronous service-to-service calls where low latency is required.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "RED",
+        "burstiness_score": 4.6462,
+        "hedge_ratio": 0.0,
+        "temporal_anchor_found": false,
+        "note": "AI signals: hedge ratio 0.0000 (below threshold); no temporal anchors with compound AI signals; 5 structured list items (unusual for spoken responses)."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 41.25,
+      "classification": "WATCH"
+    },
+    {
+      "turn_index": 6,
+      "question": "What strategies would you use for zero-downtime deployments?",
+      "response": "Zero-downtime deployments are essential for maintaining service availability during software releases. The comprehensive deployment strategy encompasses the following techniques:\n\n1. Blue-Green Deployment: Maintain two identical production environments. Route traffic to the blue environment while deploying to green, then switch the load balancer to point to green after validation.\n2. Canary Releases: Gradually route an increasing percentage of traffic to the new version, starting at 1% and incrementally increasing based on error rate and latency metrics.\n3. Rolling Updates: Kubernetes rolling update strategy with configurable maxSurge and maxUnavailable parameters to control the update velocity.\n4. Database Migration Strategy: Implement backward-compatible schema migrations using the expand-contract pattern to ensure both old and new application versions can coexist.\n5. Feature Flags: Decouple deployment from release by using feature flags to control feature visibility independently of the deployment process.\n\nRollback procedures should be automated and tested regularly to ensure rapid recovery from deployment failures.",
+      "timestamp": "2026-04-12 16:41:24",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Senior",
+        "threshold_multiplier": 0.85,
+        "adjusted_fk_range": [
+          11,
+          14
+        ],
+        "note": "Calibrated for Senior tier. FK range (11, 14), multiplier 0.85."
+      },
+      "aiga_result": {
+        "signal": "RED",
+        "burstiness_score": 4.7636,
+        "hedge_ratio": 0.0,
+        "temporal_anchor_found": false,
+        "note": "AI signals: hedge ratio 0.0000 (below threshold); no temporal anchors with compound AI signals; 5 structured list items (unusual for spoken responses)."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 41.25,
+      "classification": "WATCH"
+    }
+  ],
+  "mia_events": [],
+  "vsa_events": [],
+  "integrity_scores": [
+    0.0,
+    20.0,
+    41.25,
+    41.25,
+    41.25,
+    41.25
+  ],
+  "snapshot_paths": []
+}

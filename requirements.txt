@@ -1,2 +1,47 @@
+<<<<<<< Updated upstream
+Flask==3.1.0
+numpy>=1.26.0
+scikit-learn>=1.5.0
+Werkzeug==3.1.0
+
+=======
+# Existing dependencies
 streamlit
 groq
+fpdf2
+markdown
+
+# SENTINEL — Core
+google-generativeai
+python-dotenv
+
+# SENTINEL — NLP & Text Analysis
+textstat
+sentence-transformers
+
+# SENTINEL — Computer Vision
+opencv-python-headless
+mediapipe>=0.10.0
+ultralytics
+
+# SENTINEL — Audio/Video Streaming (browser-based, replaces pyaudio)
+streamlit-webrtc
+av
+sounddevice
+webrtcvad-wheels
+librosa
+soundfile
+noisereduce
+
+# SENTINEL — Voice Signature
+resemblyzer
+
+# SENTINEL — Report Generation
+Pillow
+matplotlib
+
+# SENTINEL — Utilities
+numpy
+scipy
+scikit-learn
+>>>>>>> Stashed changes

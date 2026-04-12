@@ -1,0 +1,131 @@
+.config-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+}
+
+.config-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.config-section {
+  padding: 2rem;
+}
+
+.config-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.preset-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  flex: 1;
+  min-width: 120px;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.preset-btn:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.preset-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.start-btn {
+  width: 100%;
+  background-color: var(--success-color);
+  color: white;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.start-btn:hover:not(:disabled) {
+  background-color: #16a34a;
+}
+
+.info-section {
+  padding: 2rem;
+  background-color: var(--light-bg);
+  border-left: 1px solid var(--border-color);
+}
+
+.info-section h3 {
+  font-size: 1.1rem;
+  margin: 1rem 0 0.75rem 0;
+  color: var(--text-primary);
+}
+
+.info-section h3:first-child {
+  margin-top: 0;
+}
+
+.info-section ol,
+.info-section ul {
+  margin-left: 1.5rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.info-section li {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .config-container {
+    grid-template-columns: 1fr;
+  }
+
+  .info-section {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .preset-buttons {
+    flex-direction: column;
+  }
+
+  .preset-btn {
+    min-width: auto;
+  }
+}

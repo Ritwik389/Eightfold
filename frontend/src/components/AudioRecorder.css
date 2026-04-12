@@ -1,0 +1,154 @@
+.audio-recorder {
+  width: 100%;
+}
+
+.recording-controls,
+.playback-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.record-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  min-width: 200px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.record-btn.start {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.record-btn.start:hover:not(:disabled) {
+  background-color: #4f46e5;
+  transform: scale(1.05);
+}
+
+.record-btn.stop {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.record-btn.stop:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 0.75rem;
+  border: 2px solid var(--danger-color);
+  width: 100%;
+  justify-content: center;
+}
+
+.recording-pulse {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--danger-color);
+  animation: recording-pulse 1s infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.recording-indicator span {
+  font-weight: 600;
+  color: var(--danger-color);
+  font-size: 1rem;
+  flex: 1;
+}
+
+.recording-indicator button {
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+.recorded-text {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.playback-btn {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 180px;
+}
+
+.playback-btn:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.submit-btn {
+  background-color: var(--success-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 150px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #16a34a;
+}
+
+.retake-btn {
+  background-color: var(--warning-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 150px;
+}
+
+.retake-btn:hover:not(:disabled) {
+  background-color: #ca8a04;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .submit-btn,
+  .retake-btn {
+    width: 100%;
+  }
+
+  .record-btn {
+    min-width: 150px;
+  }
+}

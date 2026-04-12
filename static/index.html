@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProctorSense AI — OA Monitor</title>
+<style>
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1a2235;--border:rgba(99,179,237,0.15);--border2:rgba(99,179,237,0.3);--accent:#3b82f6;--accent2:#06b6d4;--danger:#ef4444;--warn:#f59e0b;--ok:#10b981;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--card:#141c2e;--radius:10px;--mono:'Courier New',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo h1{font-size:15px;font-weight:700}
+.logo span{font-size:10px;color:var(--text2);display:block}
+.hstatus{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.badge{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.bg{background:rgba(59,130,246,0.15);color:var(--accent);border:1px solid rgba(59,130,246,0.3)}
+.bgreen{background:rgba(16,185,129,0.15);color:var(--ok);border:1px solid rgba(16,185,129,0.3)}
+.bwarn{background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3)}
+.bred{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+.timer{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent2);letter-spacing:2px}
+.main{display:grid;grid-template-columns:1fr 330px;height:calc(100vh - 57px)}
+.exam-panel{overflow-y:auto;padding:16px;border-right:1px solid var(--border)}
+.monitor-panel{overflow-y:auto;background:var(--bg2);display:flex;flex-direction:column}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:12px}
+.ct{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;flex-shrink:0}
+.dr{background:var(--danger)}.dg{background:var(--ok)}.dw{background:var(--warn)}
+/* webcam */
+.wcam-wrap{position:relative;border-radius:8px;overflow:hidden;background:#000;border:1px solid var(--border2)}
+.wcam-wrap video,.wcam-wrap canvas{width:100%;display:block;border-radius:8px}
+#overlay-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.rec-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--danger);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.cam-chips{position:absolute;bottom:5px;left:5px;right:5px;display:flex;gap:4px;flex-wrap:wrap}
+.chip{font-size:8px;padding:2px 6px;border-radius:8px;border:1px solid;font-weight:600}
+.cok{background:rgba(16,185,129,.15);color:var(--ok);border-color:rgba(16,185,129,.3)}
+.cwarn{background:rgba(245,158,11,.2);color:var(--warn);border-color:rgba(245,158,11,.4)}
+.cbad{background:rgba(239,68,68,.2);color:var(--danger);border-color:rgba(239,68,68,.4)}
+.no-cam{width:100%;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;border-radius:8px;gap:8px;font-size:12px;color:var(--text2)}
+/* meters */
+.mr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ml{font-size:10px;color:var(--text2);width:90px;flex-shrink:0}
+.mb{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.mf{height:100%;border-radius:3px;transition:width .5s ease,background .3s}
+.mv{font-size:10px;font-family:var(--mono);width:32px;text-align:right}
+/* waveform */
+.waveform{height:36px;display:flex;align-items:center;gap:1.5px;overflow:hidden}
+.wbar{width:3px;border-radius:1px;background:var(--accent);transition:height .08s;min-height:2px;flex-shrink:0}
+/* log */
+.logbox{font-family:var(--mono);font-size:9px;max-height:120px;overflow-y:auto;background:rgba(0,0,0,.3);border-radius:5px;padding:6px;border:1px solid var(--border)}
+.le{display:flex;gap:5px;padding:1px 0}
+.lt{color:var(--text3);flex-shrink:0}
+.lok{color:var(--ok)}.lwarn{color:var(--warn)}.lbad{color:var(--danger)}.linfo{color:var(--accent2)}
+/* question */
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;position:relative}
+.qcard.flagged{border-color:rgba(245,158,11,.5)!important;animation:pulse-border 2s infinite}
+@keyframes pulse-border{0%,100%{border-color:rgba(245,158,11,.4)}50%{border-color:rgba(245,158,11,.9)}}
+.flag-corner{position:absolute;top:8px;right:8px;font-size:9px;color:var(--warn);font-weight:700;display:none}
+.qcard.flagged .flag-corner{display:block}
+.qhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.qnum{width:26px;height:26px;border-radius:50%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
+.qtag{font-size:9px;padding:2px 7px;border-radius:8px;font-weight:600;margin-left:5px}
+.tmcq{background:rgba(6,182,212,.1);color:var(--accent2);border:1px solid rgba(6,182,212,.2)}
+.tcode{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.ttext{background:rgba(16,185,129,.1);color:var(--ok);border:1px solid rgba(16,185,129,.2)}
+.qbody{font-size:13px;line-height:1.6;margin-bottom:12px}
+.qcode{background:rgba(0,0,0,.4);border:1px solid var(--border2);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:#93c5fd;line-height:1.7;margin-bottom:12px;white-space:pre;overflow-x:auto}
+.opt{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all .2s;font-size:12px}
+.opt:hover{border-color:var(--accent);background:rgba(59,130,246,.06)}
+.opt.sel{border-color:var(--accent);background:rgba(59,130,246,.12);color:#93c5fd}
+.oradio{width:12px;height:12px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.oradio.s{border-color:var(--accent);background:var(--accent)}
+.oradio.s::after{content:'';width:4px;height:4px;background:#fff;border-radius:50%;display:block}
+.ceditor{width:100%;min-height:130px;background:rgba(0,0,0,.4);border:1px solid var(--border2);border-radius:5px;padding:10px;font-family:var(--mono);font-size:11px;color:#93c5fd;line-height:1.7;resize:vertical;outline:none;transition:border-color .2s}
+.ceditor:focus{border-color:var(--accent)}
+.tanswer{width:100%;min-height:70px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:5px;padding:9px 11px;font-size:12px;color:var(--text);line-height:1.6;resize:vertical;outline:none;transition:border-color .2s}
+.tanswer:focus{border-color:var(--accent)}
+.pwarn{display:none;align-items:center;gap:5px;font-size:10px;color:var(--warn);margin-top:5px;padding:4px 8px;background:rgba(245,158,11,.08);border-radius:4px;border:1px solid rgba(245,158,11,.2)}
+.pwarn.show{display:flex}
+/* qnav */
+.qnav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.qpill{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text2)}
+.qpill:hover{border-color:var(--accent);color:var(--accent)}
+.qpill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.qpill.answered{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:var(--ok)}
+.qpill.flagged-pill{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:var(--warn)}
+/* score ring */
+.score-ring{width:72px;height:72px;border-radius:50%;border:3px solid var(--ok);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;font-family:var(--mono);transition:all .4s;color:var(--ok)}
+/* flags */
+.fi{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--border);font-size:10px}
+.fi:last-child{border-bottom:none}
+.ficon{width:16px;height:16px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;margin-top:1px}
+.fw{background:rgba(245,158,11,.2);color:var(--warn)}
+.fb{background:rgba(239,68,68,.2);color:var(--danger)}
+.ftime{color:var(--text3);font-family:var(--mono);font-size:8px;display:block;margin-top:2px}
+/* screenshots */
+.ss-strip{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;min-height:50px;align-items:center}
+.sthumb{width:58px;height:38px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);flex-shrink:0;position:relative;overflow:hidden;cursor:pointer}
+.sthumb:hover{border-color:var(--warn)}
+.sthumb img{width:100%;height:100%;object-fit:cover;border-radius:4px}
+.sthumb-label{position:absolute;bottom:1px;left:0;right:0;font-size:7px;text-align:center;color:var(--text3);background:rgba(0,0,0,.6);padding:1px}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:620px;max-height:88vh;overflow-y:auto}
+.mhead{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.mtitle{font-size:14px;font-weight:700}
+.mclose{margin-left:auto;background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer}
+.mbody{padding:16px 18px}
+.rsec{margin-bottom:16px}
+.rsec h3{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:5px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rstat{background:var(--bg3);border-radius:7px;padding:9px 11px}
+.rstat-val{font-size:18px;font-weight:700;font-family:var(--mono)}
+.rstat-label{font-size:9px;color:var(--text2);margin-top:1px}
+.rss{background:var(--bg3);border-radius:7px;padding:10px;margin-bottom:7px;display:flex;gap:10px}
+.rss-thumb{width:90px;height:58px;background:#000;border-radius:4px;border:1px solid var(--border2);flex-shrink:0;overflow:hidden}
+.rss-thumb img{width:100%;height:100%;object-fit:cover}
+.rss-det{font-size:11px;color:var(--text2);line-height:1.6}
+.rss-type{font-size:9px;font-weight:700;color:var(--warn);margin-bottom:3px}
+.vbox{padding:12px 14px;border-radius:7px;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.vw{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3)}
+.mfoot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.btn-o{padding:7px 14px;border:1px solid var(--border2);border-radius:5px;background:none;color:var(--text);font-size:12px;cursor:pointer}
+.btn-p{padding:7px 14px;border:none;border-radius:5px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+/* submit */
+.sub-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:7px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-top:5px}
+.sub-btn:hover{opacity:.9}
+/* permission overlay */
+#perm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;display:flex;align-items:center;justify-content:center}
+.perm-box{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:32px;max-width:440px;text-align:center}
+.perm-box h2{font-size:18px;margin-bottom:12px}
+.perm-box p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.perm-btn{padding:11px 28px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+/* monitor header */
+.mhdr{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);display:flex;align-items:center;gap:5px}
+.mcnt{padding:12px;flex:1;overflow-y:auto}
+/* backend status */
+.be-status{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600}
+.be-ok{background:rgba(16,185,129,.15);color:var(--ok);border:1px solid rgba(16,185,129,.3)}
+.be-err{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+
+<!-- Permission overlay -->
+<div id="perm-overlay">
+  <div class="perm-box">
+    <div style="font-size:40px;margin-bottom:12px">🎓</div>
+    <h2>ProctorSense AI — OA Session</h2>
+    <p>This assessment requires access to your <strong>camera</strong> and <strong>microphone</strong> for real-time anomaly monitoring. All activity is logged for proctor review.</p>
+    <p style="font-size:11px;color:var(--text3);margin-bottom:20px">Candidate ID: CS-2047 · Track C · APOGEE 2026</p>
+    <button class="perm-btn" onclick="startSession()">Grant Access & Begin</button>
+    <div id="perm-err" style="font-size:11px;color:var(--danger);margin-top:10px;display:none"></div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔍</div>
+    <div><h1>ProctorSense AI</h1><span>Real-Time OA Monitor — APOGEE 2026</span></div>
+  </div>
+  <div class="hstatus">
+    <span class="badge bg">CS-2047</span>
+    <span class="badge bgreen" id="status-badge">Monitoring Active</span>
+    <span class="be-status be-ok" id="be-status">Backend: OK</span>
+    <div class="timer" id="timer">44:59</div>
+  </div>
+</header>
+
+<div class="main">
+<!-- ══ EXAM PANEL ══ -->
+<div class="exam-panel" id="exam-panel">
+
+  <!-- Q Nav -->
+  <div class="card">
+    <div class="ct"><span class="dot dg"></span>Question Navigator</div>
+    <div class="qnav" id="qnav">
+      <div class="qpill active" onclick="scrollQ(1)">1</div>
+      <div class="qpill" onclick="scrollQ(2)">2</div>
+      <div class="qpill" onclick="scrollQ(3)">3</div>
+      <div class="qpill" onclick="scrollQ(4)">4</div>
+      <div class="qpill" onclick="scrollQ(5)">5</div>
+      <div class="qpill" onclick="scrollQ(6)">6</div>
+      <div class="qpill" onclick="scrollQ(7)">7</div>
+    </div>
+    <div style="display:flex;gap:10px;font-size:10px;color:var(--text3)"><span>⬛ Not visited</span><span style="color:var(--ok)">🟩 Answered</span><span style="color:var(--warn)">🟨 Flagged</span></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="qcard" id="q1">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">1</div><div><div style="font-size:12px;font-weight:600">Data Structures<span class="qtag tmcq">MCQ</span></div><div style="font-size:10px;color:var(--text3)">4 marks · single correct</div></div></div>
+    <div class="qbody">What is the time complexity of finding the <strong>k-th smallest element</strong> in a min-heap of n elements?</div>
+    <div id="mcq1">
+      <div class="opt" onclick="selMCQ('mcq1',this,'A')"><div class="oradio" id="mcq1-A"></div>O(1)</div>
+      <div class="opt" onclick="selMCQ('mcq1',this,'B')"><div class="oradio" id="mcq1-B"></div>O(k log k)</div>
+      <div class="opt" onclick="selMCQ('mcq1',this,'C')"><div class="oradio" id="mcq1-C"></div>O(log n)</div>
+      <div class="opt" onclick="selMCQ('mcq1',this,'D')"><div class="oradio" id="mcq1-D"></div>O(n)</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qcard" id="q2">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">2</div><div><div style="font-size:12px;font-weight:600">Operating Systems<span class="qtag tmcq">MCQ</span></div><div style="font-size:10px;color:var(--text3)">4 marks · single correct</div></div></div>
+    <div class="qbody">In the <strong>Banker's Algorithm</strong>, what is the key condition before granting a resource request?</div>
+    <div id="mcq2">
+      <div class="opt" onclick="selMCQ('mcq2',this,'A')"><div class="oradio" id="mcq2-A"></div>Process holds ≥1 resource</div>
+      <div class="opt" onclick="selMCQ('mcq2',this,'B')"><div class="oradio" id="mcq2-B"></div>System remains in a safe state after allocation</div>
+      <div class="opt" onclick="selMCQ('mcq2',this,'C')"><div class="oradio" id="mcq2-C"></div>No circular wait exists currently</div>
+      <div class="opt" onclick="selMCQ('mcq2',this,'D')"><div class="oradio" id="mcq2-D"></div>All processes declared their max need</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qcard" id="q3">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">3</div><div><div style="font-size:12px;font-weight:600">Computer Networks<span class="qtag tmcq">MCQ</span></div><div style="font-size:10px;color:var(--text3)">4 marks · single correct</div></div></div>
+    <div class="qbody">Which TCP congestion control phase causes the window to grow <strong>linearly</strong> after reaching ssthresh?</div>
+    <div id="mcq3">
+      <div class="opt" onclick="selMCQ('mcq3',this,'A')"><div class="oradio" id="mcq3-A"></div>Slow Start</div>
+      <div class="opt" onclick="selMCQ('mcq3',this,'B')"><div class="oradio" id="mcq3-B"></div>Congestion Avoidance</div>
+      <div class="opt" onclick="selMCQ('mcq3',this,'C')"><div class="oradio" id="mcq3-C"></div>Fast Retransmit</div>
+      <div class="opt" onclick="selMCQ('mcq3',this,'D')"><div class="oradio" id="mcq3-D"></div>Fast Recovery</div>
+    </div>
+  </div>
+
+  <!-- Q4 Coding Easy -->
+  <div class="qcard" id="q4">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">4</div><div><div style="font-size:12px;font-weight:600">Coding — Easy<span class="qtag tcode">Code</span></div><div style="font-size:10px;color:var(--text3)">10 marks · any language</div></div></div>
+    <div class="qbody">Given an array, return <strong>indices of two numbers</strong> adding up to target. O(n) required.</div>
+    <div class="qcode">Input:  nums=[2,7,11,15], target=9 → Output: [0,1]
+Input:  nums=[3,2,4], target=6   → Output: [1,2]</div>
+    <textarea class="ceditor" id="code4" placeholder="# Write your solution here&#10;def twoSum(nums, target):&#10;    pass" data-qnum="4" oninput="onType(4,this)" onpaste="onPaste(4,this)" onfocus="onFocus()" onblur="onBlur()"></textarea>
+    <div class="pwarn" id="pw4">⚠ Paste detected — flagged for proctor review</div>
+  </div>
+
+  <!-- Q5 Coding Medium -->
+  <div class="qcard" id="q5">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">5</div><div><div style="font-size:12px;font-weight:600">Coding — Medium<span class="qtag tcode">Code</span></div><div style="font-size:10px;color:var(--text3)">15 marks · any language</div></div></div>
+    <div class="qbody">Implement <strong>LRU Cache</strong> with O(1) get and put. Evict LRU when capacity exceeded.</div>
+    <div class="qcode">LRUCache(2) → put(1,1) → put(2,2) → get(1)→1 → put(3,3) → get(2)→-1</div>
+    <textarea class="ceditor" id="code5" placeholder="class LRUCache:&#10;    def __init__(self, capacity):&#10;        pass" data-qnum="5" oninput="onType(5,this)" onpaste="onPaste(5,this)" onfocus="onFocus()" onblur="onBlur()"></textarea>
+    <div class="pwarn" id="pw5">⚠ Paste detected — flagged for proctor review</div>
+  </div>
+
+  <!-- Q6 Subjective -->
+  <div class="qcard" id="q6">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">6</div><div><div style="font-size:12px;font-weight:600">System Design<span class="qtag ttext">Text</span></div><div style="font-size:10px;color:var(--text3)">12 marks · descriptive</div></div></div>
+    <div class="qbody">Design a <strong>rate limiter</strong> for 100M requests/day. Describe algorithm, data structures, distributed handling.</div>
+    <textarea class="tanswer" id="text6" placeholder="Write your answer here..." data-qnum="6" oninput="onType(6,this)" onpaste="onPaste(6,this)" onfocus="onFocus()" onblur="onBlur()"></textarea>
+    <div class="pwarn" id="pw6">⚠ Paste detected — flagged for proctor review</div>
+  </div>
+
+  <!-- Q7 Subjective -->
+  <div class="qcard" id="q7">
+    <div class="flag-corner">⚑ FLAGGED</div>
+    <div class="qhead"><div class="qnum">7</div><div><div style="font-size:12px;font-weight:600">Database Concepts<span class="qtag ttext">Text</span></div><div style="font-size:10px;color:var(--text3)">11 marks · descriptive</div></div></div>
+    <div class="qbody">Explain <strong>ACID vs BASE</strong> consistency models. When to choose each? Give real-world examples.</div>
+    <textarea class="tanswer" id="text7" placeholder="Write your answer here..." data-qnum="7" oninput="onType(7,this)" onpaste="onPaste(7,this)" onfocus="onFocus()" onblur="onBlur()"></textarea>
+    <div class="pwarn" id="pw7">⚠ Paste detected — flagged for proctor review</div>
+  </div>
+
+  <hr style="border-color:var(--border);margin:16px 0">
+  <button class="sub-btn" onclick="submitExam()">Submit Assessment</button>
+  <p style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;margin-bottom:20px">All monitoring data is reviewed by proctors before any decision.</p>
+</div>
+
+<!-- ══ MONITOR PANEL ══ -->
+<div class="monitor-panel">
+  <div class="mhdr"><span style="color:var(--danger);font-size:7px">⬤</span>Live Monitor</div>
+  <div class="mcnt">
+
+    <!-- Webcam -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot dr"></span>Camera + MediaPipe Face Mesh</div>
+      <div class="wcam-wrap" id="wcam-wrap">
+        <div class="no-cam" id="no-cam">
+          <div style="font-size:28px">📷</div>
+          <div>Camera initializing...</div>
+        </div>
+        <video id="webcam-video" autoplay muted playsinline style="display:none"></video>
+        <canvas id="face-canvas" style="display:none"></canvas>
+        <canvas id="overlay-canvas"></canvas>
+        <div class="rec-dot"></div>
+        <div class="cam-chips" id="cam-chips">
+          <span class="chip cwarn" id="chip-face">No Face</span>
+          <span class="chip cok" id="chip-gaze">Gaze: —</span>
+          <span class="chip cok" id="chip-neck">Neck: —</span>
+          <span class="chip cok" id="chip-blink">Blink: —</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anomaly Meters (driven by backend SSE) -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot dw"></span>Anomaly Scores (Isolation Forest)</div>
+      <div class="mr"><div class="ml">Eye gaze</div><div class="mb"><div class="mf" id="m-eye" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-eye" style="color:var(--ok)">0%</div></div>
+      <div class="mr"><div class="ml">Neck/head</div><div class="mb"><div class="mf" id="m-neck" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-neck" style="color:var(--ok)">0%</div></div>
+      <div class="mr"><div class="ml">Voice VAD</div><div class="mb"><div class="mf" id="m-voice" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-voice" style="color:var(--ok)">0%</div></div>
+      <div class="mr"><div class="ml">Iso.Forest</div><div class="mb"><div class="mf" id="m-iso" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-iso" style="color:var(--ok)">0%</div></div>
+      <div class="mr"><div class="ml">Text paste</div><div class="mb"><div class="mf" id="m-text" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-text" style="color:var(--ok)">0%</div></div>
+      <div class="mr"><div class="ml">Typing vel.</div><div class="mb"><div class="mf" id="m-vel" style="width:0%;background:var(--ok)"></div></div><div class="mv" id="v-vel" style="color:var(--ok)">0%</div></div>
+    </div>
+
+    <!-- Overall Risk -->
+    <div class="card" style="padding:10px;text-align:center">
+      <div class="ct" style="justify-content:center"><span class="dot dw"></span>Overall Risk (Weighted IF)</div>
+      <div class="score-ring" id="score-ring">0</div>
+      <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px" id="model-status">Collecting baseline...</div>
+    </div>
+
+    <!-- Voice Waveform -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot dg"></span>Voice (Web Audio API VAD)</div>
+      <div class="waveform" id="waveform"></div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:3px">
+        <span id="vad-status">Microphone inactive</span>
+        <span id="vad-count">Events: 0</span>
+      </div>
+    </div>
+
+    <!-- Event Log -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot"></span>Event Log</div>
+      <div class="logbox" id="logbox"></div>
+    </div>
+
+    <!-- Screenshots -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot dw"></span>Evidence Screenshots</div>
+      <div class="ss-strip" id="ss-strip"><span style="font-size:10px;color:var(--text3)">No evidence captured yet</span></div>
+      <button onclick="openReport()" style="width:100%;margin-top:8px;padding:6px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:5px;color:var(--warn);font-size:11px;font-weight:600;cursor:pointer">View Full Report →</button>
+    </div>
+
+    <!-- Flags -->
+    <div class="card" style="padding:10px">
+      <div class="ct"><span class="dot dr"></span>Active Flags (<span id="flag-count">0</span>)</div>
+      <div id="flag-list"><div style="font-size:10px;color:var(--text3);padding:6px 0;text-align:center">No flags raised yet</div></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══ REPORT MODAL ══ -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="mhead"><span style="font-size:18px">📋</span><div class="mtitle">Anomaly Report — CS-2047</div><button class="mclose" onclick="closeReport()">✕</button></div>
+    <div class="mbody">
+      <div class="vbox vw"><div style="font-size:24px">⚑</div><div><div style="font-size:12px;font-weight:700;color:var(--warn)">Flagged for Human Review</div><div style="font-size:11px;color:var(--text2);margin-top:2px">Candidate has NOT been disqualified. Proctors decide.</div></div></div>
+      <div class="rsec"><h3>Summary</h3>
+        <div class="rgrid">
+          <div class="rstat"><div class="rstat-val" id="r-flags" style="color:var(--warn)">0</div><div class="rstat-label">Total flags</div></div>
+          <div class="rstat"><div class="rstat-val" id="r-paste" style="color:var(--danger)">0</div><div class="rstat-label">Paste events</div></div>
+          <div class="rstat"><div class="rstat-val" id="r-gaze" style="color:var(--warn)">0</div><div class="rstat-label">Gaze deviations</div></div>
+          <div class="rstat"><div class="rstat-val" id="r-neck" style="color:var(--warn)">0</div><div class="rstat-label">Neck anomalies</div></div>
+          <div class="rstat"><div class="rstat-val" id="r-voice" style="color:var(--accent2)">0</div><div class="rstat-label">Voice events</div></div>
+          <div class="rstat"><div class="rstat-val" id="r-tabs" style="color:var(--danger)">0</div><div class="rstat-label">Tab switches</div></div>
+        </div>
+      </div>
+      <div class="rsec"><h3>Evidence (Saved Screenshots)</h3><div id="report-screenshots"><p style="font-size:11px;color:var(--text3)">No screenshots yet.</p></div></div>
+      <div class="rsec"><h3>Event Timeline</h3><div class="logbox" id="report-log" style="max-height:150px"></div></div>
+      <div class="rsec"><h3>Isolation Forest Analysis</h3>
+        <div style="background:var(--bg3);border-radius:7px;padding:10px;font-size:11px;color:var(--text2);line-height:1.7" id="iso-analysis">
+          Model: IsolationForest(n_estimators=100, contamination=0.08)<br>
+          Features: gaze_x, gaze_y, neck_angle, blink_rate, voice_energy, voice_is_speech, paste_count, type_velocity, answer_similarity, tab_switches<br>
+          <span id="iso-result">Status: Calibrating...</span>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn-o" onclick="closeReport()">Close</button>
+      <button class="btn-p" onclick="exportReport()">Download Report JSON</button>
+    </div>
+  </div>
+</div>
+
+<!-- MediaPipe CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/face_mesh.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+
+<script>
+// ══════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════
+const BACKEND = 'http://localhost:5051';
+const API = (path) => BACKEND + path;
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+const st = {
+  time: 44*60+59,
+  flags: [],
+  screenshots: [],
+  logEntries: [],
+  pasteCount: 0, gazeDevCount: 0, voiceEventCount: 0, neckEventCount: 0,
+  scores: {eye:0,neck:0,voice:0,iso_forest:0,text_paste:0,typing_velocity:0,overall:0},
+  // Typing tracking per question
+  typing: {},         // {qNum: {lastLen, lastTime, charTimes: []}}
+  faceMesh: null,
+  camera: null,
+  audioCtx: null,
+  analyser: null,
+  audioStream: null,
+  vadActive: false,
+  speechStart: null,
+  consecutiveSpeech: 0,
+  lastPasteTime: {},
+  inFocus: true,
+  blinkCount: 0,
+  blinkWindow: [],
+  lastEyeOpen: true,
+  sseConnected: false,
+};
+
+// ══════════════════════════════════════════════════
+// WAVEFORM BARS
+// ══════════════════════════════════════════════════
+const waveEl = document.getElementById('waveform');
+const NUM_BARS = 32;
+for(let i=0;i<NUM_BARS;i++){const b=document.createElement('div');b.className='wbar';b.style.height='2px';waveEl.appendChild(b);}
+const waveBars = waveEl.querySelectorAll('.wbar');
+let voicePhase = 0;
+
+function drawWave(isSpeech, energy=0){
+  waveBars.forEach((b,i)=>{
+    const h = isSpeech
+      ? Math.max(2, Math.abs(Math.sin((i+voicePhase)*0.6)*28*energy) + Math.random()*4*energy + 3)
+      : Math.max(2, Math.random()*2.5);
+    b.style.height = Math.min(34,h)+'px';
+    b.style.background = isSpeech ? 'var(--warn)' : 'var(--accent)';
+  });
+  voicePhase += 0.3;
+}
+
+// ══════════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════════
+function pad(n){return String(n).padStart(2,'0')}
+setInterval(()=>{
+  if(st.time>0){st.time--;const m=Math.floor(st.time/60),s=st.time%60;
+  document.getElementById('timer').textContent=pad(m)+':'+pad(s);
+  if(st.time<300)document.getElementById('timer').style.color='var(--danger)';
+  else if(st.time<600)document.getElementById('timer').style.color='var(--warn)';}
+},1000);
+
+// ══════════════════════════════════════════════════
+// BACKEND + SSE
+// ══════════════════════════════════════════════════
+function postBackend(path, data){
+  fetch(API(path),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);beStatus(true);})
+    .catch(()=>beStatus(false));
+}
+function beStatus(ok){
+  const el=document.getElementById('be-status');
+  el.textContent=ok?'Backend: OK':'Backend: Offline';
+  el.className='be-status '+(ok?'be-ok':'be-err');
+}
+
+function connectSSE(){
+  const es = new EventSource(API('/api/stream'));
+  es.addEventListener('connected', e=>{st.sseConnected=true;addLog('Backend SSE connected','lok');beStatus(true);});
+  es.addEventListener('state', e=>{
+    const d=JSON.parse(e.data);
+    updateMetersFromBackend(d.scores);
+    document.getElementById('r-paste').textContent = d.paste_events||0;
+    document.getElementById('r-voice').textContent = d.voice_events||0;
+    if(d.model_fitted){
+      document.getElementById('model-status').textContent='IF Model: Active';
+      document.getElementById('iso-result').textContent=
+        `Score: ${d.scores.iso_forest?.toFixed(1)||0}/100 | Overall: ${d.scores.overall?.toFixed(1)||0}/100 | Decision: Flagged (not disqualified)`;
+    }
+  });
+  es.addEventListener('flag', e=>{
+    const f=JSON.parse(e.data);
+    addFlagUI(f.msg, f.severity, f.time_str);
+    // Capture screenshot with slight delay to ensure canvas is ready
+    setTimeout(()=>{
+      captureFrameForFlag(f.type, f.msg);
+    }, 50);
+  });
+  es.addEventListener('screenshot', e=>{
+    const s=JSON.parse(e.data);
+    addScreenshotUI(s);
+  });
+  es.onerror=()=>{beStatus(false);setTimeout(connectSSE,3000);};
+}
+
+// ══════════════════════════════════════════════════
+// METERS
+// ══════════════════════════════════════════════════
+function updateMetersFromBackend(scores){
+  const map={eye:'m-eye',neck:'m-neck',voice:'m-voice',iso_forest:'m-iso',text_paste:'m-text',typing_velocity:'m-vel'};
+  const vmap={eye:'v-eye',neck:'v-neck',voice:'v-voice',iso_forest:'v-iso',text_paste:'v-text',typing_velocity:'v-vel'};
+  for(const[k,fid] of Object.entries(map)){
+    const v=Math.round(scores[k]||0);
+    const fill=document.getElementById(fid);
+    const val=document.getElementById(vmap[k]);
+    if(!fill||!val)continue;
+    const color=v<30?'var(--ok)':v<60?'var(--warn)':'var(--danger)';
+    fill.style.width=v+'%';fill.style.background=color;
+    val.textContent=v+'%';val.style.color=color;
+  }
+  const overall=Math.round(scores.overall||0);
+  const ring=document.getElementById('score-ring');
+  ring.textContent=overall;
+  const rc=overall<30?'var(--ok)':overall<60?'var(--warn)':'var(--danger)';
+  ring.style.borderColor=rc;ring.style.color=rc;
+  const sb=document.getElementById('status-badge');
+  if(overall>=60){sb.textContent='Anomalies Detected';sb.className='badge bred';}
+  else if(overall>=30){sb.textContent='Suspicious Activity';sb.className='badge bwarn';}
+  else{sb.textContent='Monitoring Active';sb.className='badge bgreen';}
+  document.getElementById('r-flags').textContent=st.flags.length;
+}
+
+// ══════════════════════════════════════════════════
+// LOG
+// ══════════════════════════════════════════════════
+function nowStr(){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())}
+function addLog(msg,cls='linfo'){
+  const t=nowStr();
+  st.logEntries.push({t,msg,cls});
+  const box=document.getElementById('logbox');
+  const e=document.createElement('div');e.className='le';
+  e.innerHTML=`<span class="lt">[${t}]</span><span class="${cls}">${msg}</span>`;
+  box.appendChild(e);box.scrollTop=box.scrollHeight;
+  // sync report log
+  const rl=document.getElementById('report-log');
+  rl.innerHTML=st.logEntries.slice(-60).map(e=>`<div class="le"><span class="lt">[${e.t}]</span><span class="${e.cls}">${e.msg}</span></div>`).join('');
+  rl.scrollTop=rl.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════
+// FLAGS UI
+// ══════════════════════════════════════════════════
+function addFlagUI(msg, severity, timeStr){
+  st.flags.push({msg,severity,timeStr});
+  
+  // Track by type for report summary
+  if(msg.includes('Gaze')) st.gazeDevCount++;
+  if(msg.includes('Neck') || msg.includes('tilt')) st.neckEventCount = (st.neckEventCount||0) + 1;
+  
+  const fl=document.getElementById('flag-list');
+  if(fl.querySelector('[style*="text-align"]'))fl.innerHTML='';
+  const cls=severity==='bad'?'fb':'fw';
+  const icon=severity==='bad'?'!!':'!';
+  fl.innerHTML+=`<div class="fi"><div class="ficon ${cls}">${icon}</div><div style="color:var(--text2)">${msg}<span class="ftime">${timeStr}</span></div></div>`;
+  document.getElementById('flag-count').textContent=st.flags.length;
+  document.getElementById('r-flags').textContent=st.flags.length;
+  document.getElementById('r-gaze').textContent=st.gazeDevCount;
+  // flag question card if relevant
+  const m=msg.match(/Q(\d)/);if(m)flagQCard(parseInt(m[1]));
+}
+
+// ══════════════════════════════════════════════════
+// SCREENSHOTS UI
+// ══════════════════════════════════════════════════
+function addScreenshotUI(record){
+  st.screenshots.push(record);
+  const strip=document.getElementById('ss-strip');
+  if(strip.querySelector('span'))strip.innerHTML='';
+  const div=document.createElement('div');div.className='sthumb';div.title=record.desc;div.onclick=openReport;
+  if(record.has_image && record.img_filename){
+    div.innerHTML=`<img src="${BACKEND}/screenshots/${record.img_filename}" alt="evidence"><div class="sthumb-label">${record.time}</div>`;
+  } else {
+    div.innerHTML=`<div style="font-size:8px;color:var(--warn);text-align:center;padding:4px;line-height:1.2">${(record.type||'').toUpperCase()}</div><div class="sthumb-label">${record.time}</div>`;
+  }
+  strip.appendChild(div);
+  // update report
+  updateReportScreenshots();
+}
+function updateReportScreenshots(){
+  const rs=document.getElementById('report-screenshots');
+  if(!st.screenshots.length)return;
+  rs.innerHTML=st.screenshots.map(s=>`
+    <div class="rss">
+      <div class="rss-thumb">${s.has_image&&s.img_filename?`<img src="${BACKEND}/screenshots/${s.img_filename}" alt="frame">`:'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;color:var(--warn)">'+(s.type||'').toUpperCase()+'</div>'}</div>
+      <div class="rss-det"><div class="rss-type">${(s.type||'').toUpperCase()} ANOMALY</div>${s.desc||''}<br><span style="font-size:9px;color:var(--text3)">${s.time} · Proctor review only</span></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// CAPTURE FRAME → BACKEND (with face mesh overlay)
+// ══════════════════════════════════════════════════
+function captureFrameForFlag(flagType, desc){
+  try{
+    // Use overlay canvas which contains face mesh visualization
+    const overlayCanvas=document.getElementById('overlay-canvas');
+    const video=document.getElementById('webcam-video');
+    
+    if(!overlayCanvas || !video || video.readyState<2){
+      addLog(`Screenshot capture skipped (${flagType}): video not ready`,'lwarn');
+      return;
+    }
+    
+    // Create new canvas to composite video + overlay + annotation
+    const canvas=document.createElement('canvas');
+    canvas.width=overlayCanvas.width || video.videoWidth || 640;
+    canvas.height=overlayCanvas.height || video.videoHeight || 480;
+    const ctx=canvas.getContext('2d');
+    
+    // Draw video frame
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    
+    // Landmarks are hidden in screenshots (overlay not drawn)
+    // ctx.drawImage(overlayCanvas,0,0,canvas.width,canvas.height);
+    
+    // Draw anomaly annotation banner
+    const bannerHeight=32;
+    ctx.fillStyle='rgba(239,68,68,0.9)';  // Red banner
+    ctx.fillRect(0,canvas.height-bannerHeight,canvas.width,bannerHeight);
+    
+    ctx.fillStyle='#fff';
+    ctx.font='bold 12px monospace';
+    ctx.textBaseline='middle';
+    const flagText=`⚑ ${flagType.toUpperCase()} DETECTED | ${nowStr()}`;
+    ctx.fillText(flagText, 10, canvas.height-bannerHeight/2);
+    
+    // Convert to base64
+    const imageData=canvas.toDataURL('image/png');
+    
+    // Send to backend
+    postBackend('/api/screenshot',{
+      image:imageData,
+      meta:{
+        type:flagType,
+        desc:desc,
+        severity: flagType==='gaze'||flagType==='neck'||flagType==='paste' ? 'warn' : 'info',
+        time:nowStr(),
+        video_width:video.videoWidth,
+        video_height:video.videoHeight
+      }
+    });
+    
+    addLog(`Screenshot captured: ${flagType}`,'lok');
+  }catch(e){
+    addLog(`Screenshot error: ${e.message}`,'lwarn');
+  }
+}
+
+// ══════════════════════════════════════════════════
+// MEDIAPIPE FACE MESH
+// ══════════════════════════════════════════════════
+let faceMeshReady=false;
+let lastBlinkTime=0;
+let eyeOpenHistory=[];
+let blinkRate=15;
+
+function setupMediaPipe(){
+  const video=document.getElementById('webcam-video');
+  const overlayCanvas=document.getElementById('overlay-canvas');
+  const ctx=overlayCanvas.getContext('2d');
+
+  const faceMesh=new FaceMesh({locateFile:(f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/${f}`});
+  faceMesh.setOptions({maxNumFaces:1,refineLandmarks:true,minDetectionConfidence:0.5,minTrackingConfidence:0.5});
+
+  faceMesh.onResults(results=>{
+    overlayCanvas.width=video.videoWidth||320;
+    overlayCanvas.height=video.videoHeight||240;
+    ctx.clearRect(0,0,overlayCanvas.width,overlayCanvas.height);
+
+    const chips=document.getElementById('cam-chips');
+    const cfChip=document.getElementById('chip-face');
+
+    if(!results.multiFaceLandmarks||!results.multiFaceLandmarks.length){
+      cfChip.textContent='No Face Detected';cfChip.className='chip cbad';
+      postBackend('/api/face',{gaze_x:0,gaze_y:0,neck_angle:0,blink_rate:blinkRate,face_confidence:0});
+      return;
+    }
+    cfChip.textContent='Face ✓';cfChip.className='chip cok';
+
+    const lm=results.multiFaceLandmarks[0];
+    const W=overlayCanvas.width, H=overlayCanvas.height;
+
+    // Draw mesh connections
+    drawConnectors(ctx, lm, FACEMESH_TESSELATION, {color:'rgba(59,130,246,0.08)',lineWidth:1});
+    drawConnectors(ctx, lm, FACEMESH_RIGHT_EYE, {color:'rgba(6,182,212,0.6)',lineWidth:1.5});
+    drawConnectors(ctx, lm, FACEMESH_LEFT_EYE, {color:'rgba(6,182,212,0.6)',lineWidth:1.5});
+    drawConnectors(ctx, lm, FACEMESH_FACE_OVAL, {color:'rgba(59,130,246,0.4)',lineWidth:1.5});
+    drawConnectors(ctx, lm, FACEMESH_LIPS, {color:'rgba(139,92,246,0.4)',lineWidth:1});
+
+    // ── Gaze estimation via iris (landmarks 468-477) ──
+    // Left iris center: 468, right: 473
+    let gazeX=0, gazeY=0;
+    if(lm.length>477){
+      const li=lm[468]; // left iris
+      const ri=lm[473]; // right iris
+      // Left eye corners: 33 (inner), 133 (outer)
+      const lInner=lm[133], lOuter=lm[33];
+      const lEyeW=Math.abs(lInner.x-lOuter.x);
+      const lEyeCx=(lInner.x+lOuter.x)/2;
+      const lEyeCy=(lInner.y+lOuter.y)/2;
+      if(lEyeW>0.005){  // Lower threshold for sensitivity
+        gazeX=((li.x-lEyeCx)/lEyeW)*2.5; // -1=left, +1=right (amplified)
+        gazeY=((li.y-lEyeCy)/(lEyeW*0.6))*2.5;  // Amplified for better detection
+      }
+      // Draw iris markers (larger and more visible)
+      ctx.beginPath();
+      ctx.arc(li.x*W,li.y*H,5,0,Math.PI*2);
+      ctx.fillStyle='rgba(6,182,212,0.9)';ctx.fill();
+      ctx.strokeStyle='rgba(6,182,212,1)';ctx.lineWidth=2;ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(ri.x*W,ri.y*H,5,0,Math.PI*2);
+      ctx.fillStyle='rgba(6,182,212,0.9)';ctx.fill();
+      ctx.strokeStyle='rgba(6,182,212,1)';ctx.lineWidth=2;ctx.stroke();
+    } else {
+      // Fallback: use eye center vs face center
+      const nose=lm[4];
+      const leftEye=lm[159];
+      const rightEye=lm[386];
+      const faceCx=(leftEye.x+rightEye.x)/2;
+      gazeX=(faceCx-0.5)*3;
+      gazeY=(nose.y-0.5)*2;
+    }
+
+    // ── Neck angle (head pose via multiple face points) ──
+    // Use both cheeks and chin for better head tilt estimation
+    const leftCheek=lm[234], rightCheek=lm[454];
+    const chin=lm[152];  // Chin point for better accuracy
+    
+    // Calculate multiple angles for robustness
+    const cheekTilt=Math.atan2(rightCheek.y-leftCheek.y, rightCheek.x-leftCheek.x)*180/Math.PI;
+    const chinLift=(chin.y - (leftCheek.y+rightCheek.y)/2) * 180;  // Vertical component
+    
+    // Combined neck angle (emphasis on horizontal tilt)
+    const neckAngle = cheekTilt + (chinLift * 0.3);
+
+    // ── Blink detection via EAR (Eye Aspect Ratio) ──
+    // Left eye: vertical 159,145 horizontal 33,133
+    const p2=lm[159],p6=lm[145],p3=lm[158],p5=lm[153];
+    const p1=lm[33],p4=lm[133];
+    const ear=( dist2d(p2,p6)+dist2d(p3,p5) ) / (2*dist2d(p1,p4));
+    const isEyeOpen=ear>0.2;
+    eyeOpenHistory.push(isEyeOpen);
+    if(eyeOpenHistory.length>60)eyeOpenHistory.shift();
+    if(st.lastEyeOpen&&!isEyeOpen){
+      const now2=Date.now();
+      if(now2-lastBlinkTime>200){lastBlinkTime=now2;st.blinkCount++;}
+    }
+    st.lastEyeOpen=isEyeOpen;
+    // Blink rate per minute (rolling 30s window)
+    st.blinkWindow.push({t:Date.now(),b:st.blinkCount});
+    if(st.blinkWindow.length>150)st.blinkWindow.shift();
+    const oldest=st.blinkWindow[0];
+    const elapsed=(Date.now()-oldest.t)/60000;
+    blinkRate=elapsed>0?Math.round((st.blinkCount-oldest.b)/elapsed):15;
+
+    // Update chips
+    const gDev=Math.sqrt(gazeX*gazeX+gazeY*gazeY);
+    let gDir='Forward';
+    if(gDev>0.2){if(Math.abs(gazeX)>Math.abs(gazeY))gDir=gazeX<0?'Left':'Right';else gDir=gazeY<0?'Up':'Down';}
+    const gChip=document.getElementById('chip-gaze');
+    const gazeStatus = gDev<0.15 ? '✓ Normal' : gDev<0.25 ? '⚠ Alert' : '⚡ Deviation: '+gDir;
+    gChip.textContent='Gaze: '+gazeStatus;gChip.className='chip '+(gDev>0.25?'cwarn':gDev>0.15?'cwarn':'cok');
+    
+    const nChip=document.getElementById('chip-neck');
+    const neckStatus = Math.abs(neckAngle)<10 ? '✓ Normal' : Math.abs(neckAngle)<12 ? '⚠ Alert' : '⚡ Tilt: '+neckAngle.toFixed(0)+'°';
+    nChip.textContent='Neck: '+neckStatus;
+    nChip.className='chip '+(Math.abs(neckAngle)>12?'cwarn':Math.abs(neckAngle)>10?'cwarn':'cok');
+    
+    const bChip=document.getElementById('chip-blink');
+    bChip.textContent='Blink: '+blinkRate+'/min';
+    bChip.className='chip '+(blinkRate<8||blinkRate>30?'cwarn':'cok');
+
+    // Draw gaze arrow
+    const cx=W/2,cy=H/2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);ctx.lineTo(cx+gazeX*40,cy+gazeY*40);
+    ctx.strokeStyle=gDev>0.35?'rgba(245,158,11,0.8)':'rgba(59,130,246,0.6)';
+    ctx.lineWidth=2;ctx.stroke();
+    // Arrow head
+    ctx.beginPath();ctx.arc(cx+gazeX*40,cy+gazeY*40,3,0,Math.PI*2);
+    ctx.fillStyle=gDev>0.35?'rgba(245,158,11,1)':'rgba(59,130,246,1)';ctx.fill();
+
+    // Post to backend
+    postBackend('/api/face',{
+      gaze_x: parseFloat(gazeX.toFixed(3)),
+      gaze_y: parseFloat(gazeY.toFixed(3)),
+      neck_angle: parseFloat(neckAngle.toFixed(1)),
+      blink_rate: blinkRate,
+      face_confidence: 1.0,
+    });
+  });
+
+  st.faceMesh=faceMesh;
+  // Camera loop
+  const camera=new Camera(video,{
+    onFrame:async()=>{
+      if(faceMesh&&video.readyState>=2){
+        try{await faceMesh.send({image:video});}catch(e){}
+      }
+    },
+    width:640,height:480
+  });
+  camera.start();
+  st.camera=camera;
+  faceMeshReady=true;
+  addLog('MediaPipe FaceMesh loaded (468+iris landmarks)','lok');
+}
+
+function dist2d(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2)}
+
+// ══════════════════════════════════════════════════
+// WEB AUDIO API — Real VAD
+// ══════════════════════════════════════════════════
+const SPEECH_THRESHOLD=0.015;  // RMS threshold for speech detection
+const SPEECH_FRAMES_ON=3;      // consecutive frames to declare speech ON
+const SPEECH_FRAMES_OFF=8;     // consecutive quiet frames to declare speech OFF
+
+let audioTick=0;
+let speechOnFrames=0, speechOffFrames=0;
+let currentlySpeaking=false;
+
+function setupAudio(stream){
+  const AudioContext=window.AudioContext||window.webkitAudioContext;
+  const ctx=new AudioContext({sampleRate:16000});
+  const src=ctx.createMediaStreamSource(stream);
+  const analyser=ctx.createAnalyser();
+  analyser.fftSize=512;analyser.smoothingTimeConstant=0.6;
+  src.connect(analyser);
+  st.audioCtx=ctx;st.analyser=analyser;
+  addLog('Web Audio API: 16kHz mono stream active','lok');
+  runVAD();
+}
+
+function runVAD(){
+  if(!st.analyser){return;}
+  const buf=new Float32Array(st.analyser.fftSize);
+  function frame(){
+    st.analyser.getFloatTimeDomainData(buf);
+    // Compute RMS energy
+    let sum=0;for(let i=0;i<buf.length;i++)sum+=buf[i]*buf[i];
+    const rms=Math.sqrt(sum/buf.length);
+    const normalized=Math.min(1,rms/0.5);
+
+    // Draw waveform
+    drawWave(rms>SPEECH_THRESHOLD, Math.max(0.1, rms/0.1));
+
+    // State machine for VAD
+    if(rms>SPEECH_THRESHOLD){
+      speechOnFrames++;speechOffFrames=0;
+      if(!currentlySpeaking&&speechOnFrames>=SPEECH_FRAMES_ON){
+        currentlySpeaking=true;
+        st.speechStart=Date.now();
+        document.getElementById('vad-status').textContent='🎤 Speech detected!';
+        document.getElementById('vad-status').style.color='var(--warn)';
+        addLog(`VAD: Speech start (RMS=${rms.toFixed(4)})`,'lwarn');
+        postBackend('/api/voice',{energy:normalized,is_speech:true});
+      }
+    } else {
+      speechOffFrames++;speechOnFrames=0;
+      if(currentlySpeaking&&speechOffFrames>=SPEECH_FRAMES_OFF){
+        currentlySpeaking=false;
+        const dur=(Date.now()-st.speechStart)/1000;
+        st.speechStart=null;
+        if(dur>0.5){
+          st.voiceEventCount++;
+          document.getElementById('vad-count').textContent='Events: '+st.voiceEventCount;
+          addLog(`VAD: Speech segment ${dur.toFixed(1)}s — event #${st.voiceEventCount}`,'lwarn');
+          postBackend('/api/voice',{energy:normalized,is_speech:false,duration:dur});
+          // Force screenshot capture
+          setTimeout(()=>captureFrameForFlag('voice',`Speech event #${st.voiceEventCount} (${dur.toFixed(1)}s)`),200);
+        }
+        document.getElementById('vad-status').textContent='No speech detected';
+        document.getElementById('vad-status').style.color='var(--text3)';
+      } else if(!currentlySpeaking){
+        postBackend('/api/voice',{energy:normalized,is_speech:false});
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ══════════════════════════════════════════════════
+// TEXT TRACKING
+// ══════════════════════════════════════════════════
+function onType(qNum, el){
+  const now=Date.now();
+  if(!st.typing[qNum])st.typing[qNum]={lastLen:0,lastTime:now,charTimes:[]};
+  const t=st.typing[qNum];
+  const len=el.value.length;
+  const delta=len-t.lastLen;
+  const dt=now-t.lastTime;
+  t.lastLen=len;t.lastTime=now;
+  t.charTimes.push({delta,dt,ts:now});
+  if(t.charTimes.length>100)t.charTimes.shift();
+  markAnswered(qNum);
+
+  // Check for burst (>20 chars, <300ms = suspicious)
+  if(delta>20&&dt<300){
+    addLog(`Q${qNum}: Burst ${delta} chars in ${dt}ms`,'lwarn');
+    postBackend('/api/text',{q_num:qNum,type:'burst',text:el.value,char_delta:delta,dt_ms:dt});
+    flagQCard(qNum);
+  }
+}
+
+function onPaste(qNum, el){
+  const t=Date.now();
+  if(st.lastPasteTime[qNum]&&t-st.lastPasteTime[qNum]<2000)return;
+  st.lastPasteTime[qNum]=t;
+  st.pasteCount++;
+  setTimeout(()=>{
+    const text=el.value;
+    addLog(`PASTE Q${qNum}: ${text.length} chars`,'lbad');
+    document.getElementById('pw'+qNum).classList.add('show');
+    flagQCard(qNum);
+    markFlaggedPill(qNum);
+    postBackend('/api/text',{q_num:qNum,type:'paste',text:text,char_delta:text.length,dt_ms:1});
+    captureFrameForFlag('paste',`Paste event on Q${qNum}. ${text.length} characters pasted.`);
+  },100);
+}
+
+function onFocus(){st.inFocus=true;}
+function onBlur(){
+  if(st.inFocus){st.inFocus=false;}
+}
+// Detect tab switch
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    addLog('Tab/window switch detected','lbad');
+    postBackend('/api/text',{type:'tab_switch',q_num:0});
+    captureFrameForFlag('tab_switch','Candidate left the exam window.');
+  }
+});
+
+// ══════════════════════════════════════════════════
+// MCQ
+// ══════════════════════════════════════════════════
+function selMCQ(gid, el, opt){
+  document.getElementById(gid).querySelectorAll('.opt').forEach(o=>{o.classList.remove('sel');o.querySelector('.oradio').classList.remove('s');});
+  el.classList.add('sel');el.querySelector('.oradio').classList.add('s');
+  markAnswered(parseInt(gid.replace('mcq','')));
+}
+
+// ══════════════════════════════════════════════════
+// Q NAV
+// ══════════════════════════════════════════════════
+function scrollQ(n){
+  document.getElementById('q'+n).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.qpill').forEach((p,i)=>p.classList.toggle('active',i===n-1));
+}
+function markAnswered(n){
+  const p=document.querySelectorAll('.qpill')[n-1];
+  if(p&&!p.classList.contains('flagged-pill')){p.classList.remove('active');p.classList.add('answered');}
+}
+function markFlaggedPill(n){
+  const p=document.querySelectorAll('.qpill')[n-1];
+  if(p){p.classList.remove('answered');p.classList.add('flagged-pill');}
+}
+function flagQCard(n){
+  const c=document.getElementById('q'+n);
+  if(c)c.classList.add('flagged');
+  markFlaggedPill(n);
+}
+
+// ══════════════════════════════════════════════════
+// INIT SESSION
+// ══════════════════════════════════════════════════
+async function startSession(){
+  const errEl=document.getElementById('perm-err');
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    // Set up video
+    const video=document.getElementById('webcam-video');
+    video.srcObject=stream;
+    video.style.display='block';
+    document.getElementById('no-cam').style.display='none';
+    document.getElementById('perm-overlay').style.display='none';
+
+    // Split streams
+    const videoStream=new MediaStream(stream.getVideoTracks());
+    const audioStream=new MediaStream(stream.getAudioTracks());
+    st.audioStream=audioStream;
+
+    // Setup audio VAD
+    setupAudio(audioStream);
+
+    // Try to load MediaPipe
+    if(typeof FaceMesh!=='undefined'&&typeof Camera!=='undefined'){
+      video.srcObject=videoStream;
+      await video.play().catch(()=>{});
+      setupMediaPipe();
+    } else {
+      addLog('MediaPipe CDN unavailable — using fallback face tracking','lwarn');
+      setupFallbackTracking(videoStream);
+    }
+
+    // Connect SSE
+    connectSSE();
+
+    // Initial logs
+    addLog('Session started — all sensors active','lok');
+    addLog('WebRTC VAD: 16kHz mono active','linfo');
+
+  }catch(e){
+    errEl.style.display='block';
+    errEl.textContent='Permission denied or camera unavailable: '+e.message;
+    // Still start SSE and session without camera
+    document.getElementById('perm-overlay').style.display='none';
+    connectSSE();
+    addLog('Camera/mic denied — monitoring text & backend only','lwarn');
+  }
+}
+
+// Fallback: canvas-based motion detection (no MediaPipe)
+function setupFallbackTracking(videoStream){
+  const video=document.getElementById('webcam-video');
+  video.srcObject=videoStream;
+  video.play().catch(()=>{});
+  const fc=document.getElementById('face-canvas');
+  fc.style.display='none';
+  const overlay=document.getElementById('overlay-canvas');
+  const ctx=overlay.getContext('2d');
+  let prevFrame=null;
+
+  function fallbackFrame(){
+    if(video.readyState<2){requestAnimationFrame(fallbackFrame);return;}
+    overlay.width=video.videoWidth||320;overlay.height=video.videoHeight||240;
+    ctx.drawImage(video,0,0,overlay.width,overlay.height);
+    const imgData=ctx.getImageData(0,0,overlay.width,overlay.height);
+    ctx.clearRect(0,0,overlay.width,overlay.height);
+    ctx.drawImage(video,0,0,overlay.width,overlay.height);
+
+    if(prevFrame){
+      let motion=0;
+      for(let i=0;i<imgData.data.length;i+=16){
+        const d=Math.abs(imgData.data[i]-prevFrame[i]);
+        if(d>30)motion++;
+      }
+      const motionScore=motion/(imgData.data.length/16);
+      const gazeX=(motionScore-0.1)*2;
+      postBackend('/api/face',{gaze_x:gazeX,gaze_y:0,neck_angle:0,blink_rate:15,face_confidence:0.5});
+    }
+    prevFrame=new Uint8ClampedArray(imgData.data);
+    // Draw overlay frame
+    ctx.strokeStyle='rgba(59,130,246,0.4)';ctx.lineWidth=2;
+    ctx.strokeRect(overlay.width*0.2,overlay.height*0.1,overlay.width*0.6,overlay.height*0.8);
+    ctx.fillStyle='rgba(59,130,246,0.6)';ctx.font='9px monospace';
+    ctx.fillText('Motion tracking active',overlay.width*0.21,overlay.height*0.08);
+    requestAnimationFrame(fallbackFrame);
+  }
+  fallbackFrame();
+  document.getElementById('chip-face').textContent='Motion Track';
+  document.getElementById('chip-face').className='chip cwarn';
+  addLog('Fallback: motion-based tracking active','lwarn');
+}
+
+// ══════════════════════════════════════════════════
+// REPORT MODAL
+// ══════════════════════════════════════════════════
+function openReport(){
+  document.getElementById('modal-bg').classList.add('open');
+  updateReportScreenshots();
+  // Fetch latest report data
+  fetch(API('/api/report'))
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.summary){
+        document.getElementById('r-flags').textContent=d.summary.total_flags||0;
+        document.getElementById('r-paste').textContent=d.summary.paste_events||0;
+        document.getElementById('r-gaze').textContent=d.summary.gaze_deviations||0;
+        document.getElementById('r-neck').textContent=d.summary.neck_events||0;
+        document.getElementById('r-voice').textContent=d.summary.voice_events||0;
+        document.getElementById('r-tabs').textContent=d.summary.tab_switches||0;
+      }
+    })
+    .catch(()=>{});
+}
+function closeReport(){document.getElementById('modal-bg').classList.remove('open');}
+async function exportReport(){
+  const r=await fetch(API('/api/report')).then(r=>r.json()).catch(()=>null);
+  if(!r){alert('Backend offline');return;}
+  const blob=new Blob([JSON.stringify(r,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`proctorsense_report_CS2047_${Date.now()}.json`;a.click();
+}
+
+// ══════════════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════════════
+function submitExam(){
+  if(!confirm('Submit the assessment? This cannot be undone.'))return;
+  
+  // Stop monitoring on backend
+  fetch(API('/api/submit'), {method: 'POST', headers: {'Content-Type': 'application/json'}})
+    .then(r => r.json())
+    .catch(e => console.error('Submit error:', e));
+  
+  // Stop frontend monitoring
+  if(st.faceMesh) st.faceMesh = null;
+  if(st.camera) st.camera.stop();
+  if(st.audioCtx) st.audioCtx.close();
+  
+  document.querySelector('.sub-btn').textContent='Submitted ✓';
+  document.querySelector('.sub-btn').style.background='var(--ok)';
+  document.querySelector('.sub-btn').disabled = true;
+  addLog('Assessment submitted by CS-2047 — all monitoring stopped','lok');
+  captureFrameForFlag('submission','Final submission frame capture');
+  setTimeout(openReport,800);
+}
+</script>
+</body>
+</html>

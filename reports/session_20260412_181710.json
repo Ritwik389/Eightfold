@@ -1,0 +1,236 @@
+{
+  "candidate_name": "Aarav Patel",
+  "experience_tier": "Fresher",
+  "start_time": "2026-04-12 18:17:10",
+  "end_time": "2026-04-12 18:17:17",
+  "duration": "0m 7s",
+  "session_integrity_score": 23.86,
+  "classification": "CLEAN",
+  "turns": [
+    {
+      "turn_index": 1,
+      "question": "Walk me through how you'd decide between a layer-4 and layer-7 load balancer for a real-time chat product.",
+      "response": "Honestly, I think I kind of understand load balancers from what we covered in class. I believe a layer-4 one works at the transport level, sort of like routing TCP packets. A layer-7 one probably looks at HTTP headers and stuff. For a chat app, I'm not sure, maybe layer-7 would be better because you could route based on the actual messages? I guess it depends on how many users you have. I'm not super confident about this though.",
+      "timestamp": "2026-04-12 18:17:14",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "GREEN",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Insufficient history for drift analysis."
+      },
+      "eca_result": {
+        "tier": "Fresher",
+        "threshold_multiplier": 1.5,
+        "adjusted_fk_range": [
+          6,
+          10
+        ],
+        "note": "Calibrated for Fresher tier. FK range (6, 10), multiplier 1.5."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 1.6561,
+        "hedge_ratio": 0.1013,
+        "temporal_anchor_found": false,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 0.0,
+      "classification": "CLEAN"
+    },
+    {
+      "turn_index": 2,
+      "question": "How would you handle database connection pooling in a high-traffic API?",
+      "response": "So from what I recall, connection pooling is when you kind of reuse database connections instead of making new ones every time. I think there are libraries that do this for you, probably like SQLAlchemy has something built in. In my college project, I just used the default settings and it sort of worked. I believe you set a max number of connections and then requests wait if they're all busy. I'm not sure about the exact tuning though, maybe it depends on the database engine.",
+      "timestamp": "2026-04-12 18:17:14",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "GREEN",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Insufficient history for drift analysis."
+      },
+      "eca_result": {
+        "tier": "Fresher",
+        "threshold_multiplier": 1.5,
+        "adjusted_fk_range": [
+          6,
+          10
+        ],
+        "note": "Calibrated for Fresher tier. FK range (6, 10), multiplier 1.5."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 0.3814,
+        "hedge_ratio": 0.093,
+        "temporal_anchor_found": false,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 0.0,
+      "classification": "CLEAN"
+    },
+    {
+      "turn_index": 3,
+      "question": "Can you explain the CAP theorem and how it applies to distributed databases?",
+      "response": "Yeah so I think CAP theorem is about consistency, availability, and partition tolerance. From what I remember, you can only pick two of the three. I guess in a distributed system, network partitions can happen, so you usually have to choose between consistency and availability. I believe MongoDB is kind of AP and something like Spanner is CP? I'm not totally sure. In my experience with small projects, I haven't really had to deal with this directly, so I might be missing some nuances.",
+      "timestamp": "2026-04-12 18:17:14",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Fresher",
+        "threshold_multiplier": 1.5,
+        "adjusted_fk_range": [
+          6,
+          10
+        ],
+        "note": "Calibrated for Fresher tier. FK range (6, 10), multiplier 1.5."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 2.4524,
+        "hedge_ratio": 0.0714,
+        "temporal_anchor_found": false,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 37.5,
+      "classification": "WATCH"
+    },
+    {
+      "turn_index": 4,
+      "question": "How would you design a simple caching layer for your API?",
+      "response": "I think I'd probably use Redis, from what I've read it's pretty popular for caching. You'd store frequently accessed data in memory so you don't hit the database every time. I guess you need to think about when to invalidate the cache, like maybe set a TTL or something. In my college assignment, I sort of tried using an in-memory dictionary, which kind of worked but obviously wouldn't scale. I believe Redis handles that better because it's a separate service. I'm not sure about the exact patterns though.",
+      "timestamp": "2026-04-12 18:17:14",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Fresher",
+        "threshold_multiplier": 1.5,
+        "adjusted_fk_range": [
+          6,
+          10
+        ],
+        "note": "Calibrated for Fresher tier. FK range (6, 10), multiplier 1.5."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 1.8377,
+        "hedge_ratio": 0.0909,
+        "temporal_anchor_found": false,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 37.5,
+      "classification": "WATCH"
+    },
+    {
+      "turn_index": 5,
+      "question": "What's your approach to debugging a slow API endpoint?",
+      "response": "So usually when something is slow, I think the first thing I'd do is probably check the logs and see where the time is being spent. Maybe add some timing around the database queries. In my college project, I guess I used print statements mostly, which I know isn't ideal. I believe there are profiling tools for Python, I think cProfile or something? And probably the database queries are usually the slow part, so maybe check if there are missing indexes. I'm not sure about the more advanced techniques though, I'm still learning this stuff.",
+      "timestamp": "2026-04-12 18:17:14",
+      "lca_result": {
+        "signal": "GREEN",
+        "fk_grade": 0.0,
+        "session_baseline_fk": 0.0,
+        "deviation": 0.0,
+        "note": "textstat unavailable — insufficient signal."
+      },
+      "sda_result": {
+        "signal": "RED",
+        "cosine_to_session_mean": 0.0,
+        "q_to_a_cosine": 0.0,
+        "trajectory_delta": 0.0,
+        "note": "Semantic anomaly: session cosine low (0.000)."
+      },
+      "eca_result": {
+        "tier": "Fresher",
+        "threshold_multiplier": 1.5,
+        "adjusted_fk_range": [
+          6,
+          10
+        ],
+        "note": "Calibrated for Fresher tier. FK range (6, 10), multiplier 1.5."
+      },
+      "aiga_result": {
+        "signal": "GREEN",
+        "burstiness_score": 1.9035,
+        "hedge_ratio": 0.1158,
+        "temporal_anchor_found": false,
+        "note": "No AI generation signals detected."
+      },
+      "vsa_result": {
+        "signal": "GREEN",
+        "events": [],
+        "mean_distance": 0.0
+      },
+      "integrity_score": 37.5,
+      "classification": "WATCH"
+    }
+  ],
+  "mia_events": [],
+  "vsa_events": [],
+  "integrity_scores": [
+    0.0,
+    0.0,
+    37.5,
+    37.5,
+    37.5
+  ],
+  "snapshot_paths": []
+}

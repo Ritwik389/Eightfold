@@ -1,0 +1,148 @@
+{
+  "candidate_name": "a b",
+  "experience_tier": "Mid-level",
+  "start_time": "2026-04-12 19:25:39",
+  "end_time": "2026-04-12 19:26:32",
+  "duration": "0m 52s",
+  "session_integrity_score": 0.0,
+  "classification": "CLEAN",
+  "turns": [],
+  "mia_events": [
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:25:51",
+      "snapshot_path": "snapshots/frame_20260412_192551_190293.jpg",
+      "confidence": 0.4158652305603027,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (-0.00, -0.56)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:25:53",
+      "snapshot_path": "snapshots/frame_20260412_192553_309968.jpg",
+      "confidence": 0.41153202056884763,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (0.02, -0.62)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:25:57",
+      "snapshot_path": "snapshots/frame_20260412_192557_486259.jpg",
+      "confidence": 0.45408339500427247,
+      "note": "Sustained gaze deviation for 2.3s. Gaze vector: (-0.01, -0.52)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:00",
+      "snapshot_path": "snapshots/frame_20260412_192600_006235.jpg",
+      "confidence": 0.42528042793273924,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (-0.20, -1.01)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:02",
+      "snapshot_path": "snapshots/frame_20260412_192602_132353.jpg",
+      "confidence": 0.4141532421112061,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (0.02, -0.64)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:04",
+      "snapshot_path": "snapshots/frame_20260412_192604_261904.jpg",
+      "confidence": 0.4135092258453369,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (0.01, -0.57)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:06",
+      "snapshot_path": "snapshots/frame_20260412_192606_335775.jpg",
+      "confidence": 0.40230422019958495,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.06, -0.70)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:08",
+      "snapshot_path": "snapshots/frame_20260412_192608_401355.jpg",
+      "confidence": 0.402234411239624,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.09, -0.65)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:10",
+      "snapshot_path": "snapshots/frame_20260412_192610_527579.jpg",
+      "confidence": 0.4134523868560791,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (-0.03, -0.61)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:12",
+      "snapshot_path": "snapshots/frame_20260412_192612_606075.jpg",
+      "confidence": 0.4028118133544922,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (0.00, -0.66)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:14",
+      "snapshot_path": "snapshots/frame_20260412_192614_669575.jpg",
+      "confidence": 0.4013041973114014,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.02, -0.74)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:16",
+      "snapshot_path": "snapshots/frame_20260412_192616_734825.jpg",
+      "confidence": 0.4014997959136963,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (0.04, -0.69)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:18",
+      "snapshot_path": "snapshots/frame_20260412_192618_800099.jpg",
+      "confidence": 0.4015739917755127,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (0.03, -0.64)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:20",
+      "snapshot_path": "snapshots/frame_20260412_192620_932826.jpg",
+      "confidence": 0.41378421783447267,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (-0.02, -0.63)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:23",
+      "snapshot_path": "snapshots/frame_20260412_192623_001787.jpg",
+      "confidence": 0.40157480239868165,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.06, -0.69)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:25",
+      "snapshot_path": "snapshots/frame_20260412_192625_129990.jpg",
+      "confidence": 0.41320319175720216,
+      "note": "Sustained gaze deviation for 2.1s. Gaze vector: (-0.01, -0.65)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:27",
+      "snapshot_path": "snapshots/frame_20260412_192627_218393.jpg",
+      "confidence": 0.4019117832183838,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.02, -0.64)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:29",
+      "snapshot_path": "snapshots/frame_20260412_192629_286171.jpg",
+      "confidence": 0.400971794128418,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.01, -0.63)."
+    },
+    {
+      "event_type": "GAZE_DRIFT",
+      "timestamp_str": "19:26:31",
+      "snapshot_path": "snapshots/frame_20260412_192631_356642.jpg",
+      "confidence": 0.403821325302124,
+      "note": "Sustained gaze deviation for 2.0s. Gaze vector: (-0.01, -0.54)."
+    }
+  ],
+  "vsa_events": [],
+  "integrity_scores": [],
+  "snapshot_paths": []
+}
